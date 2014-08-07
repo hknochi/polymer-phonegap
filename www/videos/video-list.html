@@ -1,0 +1,52 @@
+<link rel="import" href="/components/polymer/polymer.html">
+<link rel="import" href="/videos/video-service.html">
+<link rel="import" href="/videos/video-card.html">
+<link rel="import" href="/components/google-youtube/google-youtube.html">
+
+<polymer-element name="video-list" attributes="show">
+  <template>
+    <style>
+    :host {
+      display: block;
+      width: 100%;
+    }
+    video-card {
+      margin-bottom: 30px;
+    }
+    </style>
+
+    <video-service id="service" videos="{{videos}}"></video-service>
+
+    <div layout vertical center>
+      <template repeat="{{video in videos}}">
+        <video-card
+          favorite="{{video.favorite}}"
+          on-favorite-tap="{{handleFavorite}}"
+          hidden?="{{show == 'favorites' && !video.favorite}}">
+          <h2>{{video.title.$t}}</h2>
+          <google-youtube
+            videoid="{{getId(video['id']['$t'])}}"
+            height="200px"
+            width="100%"
+            rel="0"
+            start="5"
+            autoplay="0">
+          </google-youtube>
+          <p>{{video.content.$t}}</p>
+        </video-card>
+      </template>
+    </div>
+  </template>
+
+  <script>
+  Polymer({
+    getId: function(url) {
+      return url.split('/')[6];
+    },
+    handleFavorite: function(event, detail, sender) {
+      var video = sender.templateInstance.model.video;
+      this.$.service.setFavorite(video.uid, video.favorite);
+    }
+  });
+  </script>
+</polymer-element>
